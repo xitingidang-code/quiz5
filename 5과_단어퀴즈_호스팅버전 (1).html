@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>중국어 5과 단어 퀴즈 · 你打算做什么?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky1:#F2E3B8; --sky2:#FBF5E2;
+    --ink:#26333F; --muted:#6C7480;
+    --blue:#46688A; --blue-d:#33506D; --blue-l:#E4ECF4;
+    --pink:#F08A45; --pink-d:#C85A22; --pink-l:#FFE8D6;
+    --green:#2E9E6B; --green-l:#DCF5E8;
+    --yellow:#FFD166; --yellow-l:#FFF4D1;
+    --red:#E5484D; --red-l:#FFE3E3;
+    --paper:#FFFFFF; --line:#E8DDB9;
+    --shadow:0 10px 26px rgba(90,70,20,.15);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background:linear-gradient(180deg,var(--sky1) 0%,var(--sky2) 52%,#fff 100%);
+    color:var(--ink);
+    font-family:'Noto Sans KR',sans-serif;
+    display:flex;flex-direction:column;align-items:center;
+    padding:18px 14px 56px;
+  }
+  .wrap{width:100%;max-width:980px;}
+  .hero{text-align:center;margin-bottom:10px;}
+  .hero svg{width:100%;max-width:520px;height:auto;display:block;margin:0 auto;}
+  .eyebrow{font-family:'Jua',sans-serif;font-size:15px;color:var(--pink-d);letter-spacing:.08em;margin-top:2px;}
+  h1{font-family:'Jua','Noto Sans SC',sans-serif;font-size:clamp(34px,7vw,56px);margin:2px 0 0;color:var(--blue);
+     text-shadow:3px 3px 0 var(--pink-l);letter-spacing:1px;}
+  .pinyin-title{font-family:'Jua',sans-serif;font-size:18px;color:var(--muted);margin-top:-2px;}
+  .subtitle{font-size:14px;color:var(--muted);margin-top:6px;}
+  .ecg{width:100%;max-width:520px;height:34px;display:block;margin:6px auto 0;}
+  .ecg path:first-of-type{stroke-dasharray:7 9;animation:march 1.4s linear infinite;}
+  @keyframes march{to{stroke-dashoffset:-16}}
+  .bus{animation:drive 7s ease-in-out infinite alternate;}
+  @keyframes drive{from{transform:translate(120px,52px)}to{transform:translate(270px,60px)}}
+  @media (prefers-reduced-motion:reduce){.ecg path{animation:none}.bus{animation:none}}
+
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:14px 0 20px;}
+  .tab-btn{font-family:'Jua',sans-serif;font-size:17px;background:#fff;color:var(--blue);
+    border:2px solid var(--blue-l);padding:8px 18px;border-radius:999px;cursor:pointer;transition:.15s;}
+  .tab-btn:hover{border-color:var(--blue);}
+  .tab-btn.active{background:var(--blue);border-color:var(--blue);color:#fff;}
+  .hidden{display:none !important;}
+
+  .panel{background:var(--paper);border-radius:20px;padding:26px 24px;box-shadow:var(--shadow);border:1px solid var(--line);position:relative;}
+  .panel.card::before{content:"";position:absolute;left:18px;right:18px;top:0;height:8px;border-radius:0 0 8px 8px;
+    background:repeating-linear-gradient(90deg,var(--pink) 0 14px,#fff 14px 20px);}
+  .panel h2{font-family:'Jua',sans-serif;font-weight:400;font-size:23px;margin:4px 0 12px;color:var(--ink);}
+  .muted{color:var(--muted);font-size:13px;line-height:1.55;}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px;}
+  .field-label{font-family:'Jua',sans-serif;font-size:14px;color:var(--blue);margin-bottom:4px;}
+  select,input[type=text],input[type=password]{font-family:inherit;font-size:15px;padding:10px 12px;border-radius:10px;
+    border:2px solid var(--line);outline:none;background:#fff;color:var(--ink);}
+  select:focus,input:focus{border-color:var(--blue);}
+  .btn{font-family:'Jua',sans-serif;font-size:16px;background:var(--ink);color:#fff;border:none;padding:10px 20px;border-radius:999px;cursor:pointer;}
+  .btn.blue{background:var(--blue);} .btn.pink{background:var(--pink-d);}
+  .btn.ghost{background:#fff;color:var(--ink);border:2px solid var(--line);}
+  .btn:disabled{opacity:.4;cursor:default;}
+  .chip-lock{display:inline-block;background:var(--blue-l);color:var(--blue-d);font-weight:700;padding:10px 14px;border-radius:10px;}
+  .radio-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .radio-row label{border:2px solid var(--line);border-radius:12px;padding:8px 12px;cursor:pointer;font-size:14px;background:#fff;}
+  .radio-row input{margin-right:6px;}
+  .radio-row label.on{border-color:var(--blue);background:var(--blue-l);}
+  .warn{background:var(--yellow-l);border:1px solid #F5C451;color:#7A5500;border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.55;margin-bottom:12px;}
+  .err{background:var(--red-l);border:1px solid #F3A3A5;color:#9B1C1F;border-radius:12px;padding:12px 14px;font-size:13px;margin:10px 0;}
+  .ok-box{background:var(--green-l);border:1px solid #9FDDBF;color:#0E6B45;border-radius:12px;padding:12px 14px;font-size:14px;margin:10px 0;}
+
+  /* quiz */
+  .phase-track{display:flex;justify-content:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+  .pill{font-family:'Jua',sans-serif;font-size:13px;padding:5px 13px;border-radius:999px;border:2px solid var(--line);color:var(--muted);}
+  .pill.active{background:var(--blue);border-color:var(--blue);color:#fff;}
+  .pill.done{background:var(--green);border-color:var(--green);color:#fff;}
+  .center{text-align:center;}
+  .progress{font-size:13px;color:var(--pink-d);font-weight:700;margin-bottom:8px;}
+  .big-hanzi{font-family:'Noto Sans SC',sans-serif;font-size:clamp(44px,10vw,74px);font-weight:700;margin:4px 0 0;}
+  .big-pinyin{font-family:'Jua',sans-serif;font-size:21px;color:var(--pink-d);margin-bottom:18px;}
+  .prompt-meaning{font-family:'Jua',sans-serif;font-size:26px;margin:6px 0 4px;}
+  .options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px;}
+  @media (max-width:520px){.options{grid-template-columns:1fr;}}
+  .opt{font-family:inherit;font-size:16px;font-weight:500;padding:16px 10px;border-radius:14px;border:2px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;transition:.12s;}
+  .opt:hover:not(:disabled){border-color:var(--blue);transform:translateY(-2px);}
+  .opt.correct{background:var(--green);border-color:var(--green);color:#fff;}
+  .opt.wrong{background:var(--red-l);border-color:var(--red);}
+  .opt:disabled{cursor:default;}
+  .next{margin-top:18px;opacity:0;pointer-events:none;transition:opacity .2s;}
+  .next.show{opacity:1;pointer-events:auto;}
+  .play{width:104px;height:104px;border-radius:50%;border:none;background:var(--blue);color:#fff;font-size:44px;cursor:pointer;
+    box-shadow:0 8px 0 var(--blue-d);margin:6px auto 18px;display:block;transition:.1s;}
+  .play:active{transform:translateY(4px);box-shadow:0 4px 0 var(--blue-d);}
+  .peek{background:none;border:none;color:var(--blue);text-decoration:underline;font-size:13px;cursor:pointer;margin-bottom:12px;}
+  .note{font-size:12px;color:var(--muted);margin-bottom:10px;}
+
+  .slots{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;min-height:60px;padding:10px;border:2px dashed var(--line);border-radius:14px;margin:12px 0;background:#FBF7E9;}
+  .tiles{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px 0 6px;}
+  .tile{font-family:'Jua',sans-serif;font-size:24px;padding:10px 18px;border-radius:12px;border:2px solid var(--blue);background:var(--blue-l);color:var(--blue-d);cursor:pointer;box-shadow:0 4px 0 var(--blue);}
+  .tile.used{opacity:.25;pointer-events:none;box-shadow:none;}
+  .tile.placed{background:var(--yellow-l);border-color:#F5C451;color:#7A5500;box-shadow:0 4px 0 #F5C451;}
+  .tile.good{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 4px 0 #0E6B45;}
+  .tile.bad{background:var(--red-l);border-color:var(--red);color:#9B1C1F;box-shadow:0 4px 0 var(--red);}
+  .fb{min-height:24px;font-family:'Jua',sans-serif;font-size:19px;margin-top:8px;}
+  .fb.ok{color:var(--green);} .fb.no{color:var(--red);}
+
+  .speed{display:grid;grid-template-columns:1fr 1fr;gap:12px 22px;margin-top:6px;}
+  .col{display:flex;flex-direction:column;gap:10px;}
+  .sc{border:2px solid var(--line);border-radius:14px;padding:12px 8px;background:#fff;cursor:pointer;text-align:center;min-height:68px;
+      display:flex;flex-direction:column;justify-content:center;align-items:center;transition:.12s;font-family:inherit;color:var(--ink);}
+  .sc .h{font-family:'Noto Sans SC',sans-serif;font-size:24px;font-weight:700;}
+  .sc .p{font-family:'Jua',sans-serif;font-size:14px;color:var(--pink-d);}
+  .sc .m{font-size:15px;font-weight:500;}
+  .sc.sel{border-color:var(--blue);background:var(--blue-l);transform:scale(1.03);}
+  .sc.done{background:var(--green);border-color:var(--green);color:#fff;pointer-events:none;}
+  .sc.done .p{color:#fff;}
+  .sc.shake{animation:shake .35s;border-color:var(--red);background:var(--red-l);}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+  .pyopt{font-family:'Jua',sans-serif;font-size:23px;padding:14px 8px;}
+  .mini-play{background:#fff;border:2px solid var(--line);border-radius:999px;font-size:15px;padding:6px 14px;cursor:pointer;margin:-6px 0 14px;color:var(--blue-d);}
+  .mini-play:hover{border-color:var(--blue);}
+  .fgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px;}
+  @media (max-width:520px){.fgrid{grid-template-columns:repeat(3,1fr);gap:8px;}}
+  .fcard{min-height:94px;border-radius:14px;border:2px solid #2B445D;cursor:pointer;padding:6px;font-family:inherit;color:var(--ink);
+    background:repeating-linear-gradient(45deg,#46688A 0 9px,#3C5B7A 9px 18px);display:flex;flex-direction:column;justify-content:center;align-items:center;
+    box-shadow:0 4px 0 #2B445D;transition:transform .12s;}
+  .fcard .back{font-size:30px;filter:drop-shadow(0 1px 0 rgba(0,0,0,.25));}
+  .fcard .face{display:none;flex-direction:column;align-items:center;gap:2px;}
+  .fcard.up{background:#fff;border-color:var(--blue);box-shadow:0 4px 0 var(--blue);transform:translateY(-2px);}
+  .fcard.up .back{display:none;} .fcard.up .face{display:flex;}
+  .fcard .h{font-family:'Noto Sans SC',sans-serif;font-size:22px;font-weight:700;word-break:break-all;} .fcard .p{font-family:'Jua',sans-serif;font-size:13px;color:var(--pink-d);}
+  .fcard .m{font-size:14px;font-weight:500;line-height:1.3;}
+  .fcard.done{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 4px 0 #1F7A50;pointer-events:none;transform:none;}
+  .fcard.done .p{color:#fff;}
+  .fcard.bad{background:var(--red-l);border-color:var(--red);box-shadow:0 4px 0 var(--red);}
+  .counter{font-family:'Jua',sans-serif;font-size:16px;margin:2px 0 6px;color:var(--blue-d);}
+  .counter.over{color:var(--red);}
+  .finish h2{font-size:34px;color:var(--blue);}
+  .score-big{font-family:'Jua',sans-serif;font-size:26px;margin:6px 0 4px;}
+  .breakdown{display:flex;justify-content:center;gap:22px;flex-wrap:wrap;margin:14px 0;}
+  .breakdown div{font-size:14px;text-align:center;color:var(--muted);}
+  .breakdown b{display:block;font-family:'Jua',sans-serif;font-size:23px;color:var(--pink-d);font-weight:400;}
+  .growth{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin:10px 0;}
+  .growth .g{background:var(--blue-l);border-radius:14px;padding:10px 16px;min-width:120px;}
+  .growth .g b{display:block;font-family:'Jua',sans-serif;font-size:22px;color:var(--blue-d);font-weight:400;}
+
+  /* tables */
+  .tbl-wrap{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;margin-top:8px;}
+  th{font-family:'Jua',sans-serif;font-weight:400;font-size:13px;text-align:left;padding:8px 8px;border-bottom:2px solid var(--line);color:var(--blue);white-space:nowrap;}
+  td{padding:9px 8px;border-bottom:1px solid #F0E9D3;font-size:14px;vertical-align:middle;}
+  tr.click{cursor:pointer;} tr.click:hover td{background:#F7F2E0;}
+  .rk{font-family:'Jua',sans-serif;font-size:19px;width:46px;}
+  .bar{background:#ECE4CA;border-radius:6px;height:10px;overflow:hidden;min-width:70px;}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--pink));}
+  .badge{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap;}
+  .b-up{background:var(--green-l);color:#0E6B45;} .b-down{background:var(--red-l);color:#9B1C1F;}
+  .b-keep{background:var(--yellow-l);color:#7A5500;} .b-one{background:#EFEADB;color:var(--muted);}
+  .b-att{background:var(--red);color:#fff;}
+  .sub-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+  .sub-tabs button{font-family:'Jua',sans-serif;font-size:15px;border:2px solid var(--line);background:#fff;color:var(--ink);padding:7px 14px;border-radius:999px;cursor:pointer;}
+  .sub-tabs button.on{background:var(--pink-d);border-color:var(--pink-d);color:#fff;}
+  .detail td{background:#FBF7E9;font-size:13px;}
+  .cell{display:inline-block;min-width:46px;text-align:center;border-radius:8px;padding:3px 6px;font-weight:700;font-size:13px;}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:8px 0 14px;}
+  .kpi{background:var(--blue-l);border-radius:14px;padding:12px 14px;}
+  .kpi span{font-size:12px;color:var(--muted);} .kpi b{display:block;font-family:'Jua',sans-serif;font-size:24px;color:var(--blue-d);font-weight:400;}
+
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 20px;border-radius:999px;
+    font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:50;}
+  .toast.show{opacity:1;}
+  .loading{text-align:center;padding:36px;color:var(--muted);font-family:'Jua',sans-serif;font-size:18px;}
+  footer{margin-top:28px;font-size:12px;color:var(--muted);text-align:center;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <svg viewBox="0 0 520 262" role="img" aria-label="자전거 탄 소녀와 버스, 궁궐과 천단이 있는 베이징 지도 일러스트">
+      <defs><clipPath id="mapclip"><rect width="520" height="262" rx="20"/></clipPath></defs>
+      <g clip-path="url(#mapclip)">
+        <rect width="520" height="262" fill="#EBD9A6"/>
+        <path d="M300 0 H520 V70 Q470 40 420 52 Q360 66 300 0Z" fill="#BFE3F5"/>
+        <g fill="#fff"><ellipse cx="410" cy="22" rx="34" ry="11"/><ellipse cx="436" cy="14" rx="20" ry="9"/></g>
+        <!-- 도로 -->
+        <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <g stroke="#8FA6BC" stroke-width="17"><path id="r1" d="M-10 84 Q120 50 250 72 T530 104"/><path d="M60 270 Q36 170 118 128 T300 156 T420 270"/><path d="M250 72 Q252 124 300 156"/><path d="M118 128 Q196 190 188 270"/><path d="M118 128 Q90 90 60 40"/></g>
+          <g stroke="#FFFFFF" stroke-width="11"><path d="M-10 84 Q120 50 250 72 T530 104"/><path d="M60 270 Q36 170 118 128 T300 156 T420 270"/><path d="M250 72 Q252 124 300 156"/><path d="M118 128 Q196 190 188 270"/><path d="M118 128 Q90 90 60 40"/></g>
+        </g>
+        <!-- 호수 -->
+        <path d="M150 150 Q176 142 184 170 Q192 206 166 226 Q140 214 138 184Z" fill="#A9D3E8" stroke="#7FB4CF" stroke-width="2.5"/>
+        <path d="M20 26 Q54 8 86 26 Q96 50 62 58 Q26 56 20 26Z" fill="#A9D3E8" stroke="#7FB4CF" stroke-width="2.5"/>
+        <circle cx="26" cy="206" r="12" fill="#6DB06A" stroke="#46853F" stroke-width="2"/><circle cx="22.4" cy="202.4" r="4.6" fill="#9AD58F"/><circle cx="46" cy="222" r="10" fill="#6DB06A" stroke="#46853F" stroke-width="2"/><circle cx="43.0" cy="219.0" r="3.8" fill="#9AD58F"/><circle cx="70" cy="196" r="9" fill="#6DB06A" stroke="#46853F" stroke-width="2"/><circle cx="67.3" cy="193.3" r="3.4" fill="#9AD58F"/><circle cx="18" cy="150" r="8" fill="#6DB06A" stroke="#46853F" stroke-width="2"/><circle cx="15.6" cy="147.6" r="3.0" fill="#9AD58F"/><circle cx="196" cy="226" r="10" fill="#6DB06A" stroke="#46853F" stroke-width="2"/><circle cx="193.0" cy="223.0" r="3.8" fill="#9AD58F"/><circle cx="214" cy="240" r="8" fill="#6DB06A" stroke="#46853F" stroke-width="2"/><circle cx="211.6" cy="237.6" r="3.0" fill="#9AD58F"/><circle cx="398" cy="120" r="9" fill="#6DB06A" stroke="#46853F" stroke-width="2"/><circle cx="395.3" cy="117.3" r="3.4" fill="#9AD58F"/><circle cx="418" cy="134" r="8" fill="#6DB06A" stroke="#46853F" stroke-width="2"/><circle cx="415.6" cy="131.6" r="3.0" fill="#9AD58F"/><circle cx="492" cy="70" r="8" fill="#6DB06A" stroke="#46853F" stroke-width="2"/><circle cx="489.6" cy="67.6" r="3.0" fill="#9AD58F"/><circle cx="34" cy="92" r="8" fill="#6DB06A" stroke="#46853F" stroke-width="2"/><circle cx="31.6" cy="89.6" r="3.0" fill="#9AD58F"/><circle cx="236" cy="100" r="7" fill="#6DB06A" stroke="#46853F" stroke-width="2"/><circle cx="233.9" cy="97.9" r="2.7" fill="#9AD58F"/><circle cx="280" cy="236" r="9" fill="#6DB06A" stroke="#46853F" stroke-width="2"/><circle cx="277.3" cy="233.3" r="3.4" fill="#9AD58F"/><circle cx="150" cy="238" r="8" fill="#6DB06A" stroke="#46853F" stroke-width="2"/><circle cx="147.6" cy="235.6" r="3.0" fill="#9AD58F"/>
+        <!-- 이허위안 -->
+        <g transform="translate(44 18)">
+          <rect x="6" y="14" width="28" height="12" fill="#C8402F" stroke="#8E2A1E" stroke-width="1.8"/>
+          <path d="M0 15 L20 2 L40 15Z" fill="#E8B94A" stroke="#A9781A" stroke-width="2" stroke-linejoin="round"/>
+          <rect x="16" y="17" width="8" height="9" fill="#5A2A18"/>
+        </g>
+        <g><rect x="22" y="62" width="50" height="15" rx="7" fill="#fff" stroke="#8FA6BC" stroke-width="1.6"/><text x="47" y="73" text-anchor="middle" font-family="Noto Sans SC,sans-serif" font-weight="700" font-size="10.5" fill="#26333F">颐和园</text></g>
+        <!-- 자금성 -->
+        <g transform="translate(214 118)">
+          <rect x="0" y="22" width="100" height="26" fill="#C8402F" stroke="#8E2A1E" stroke-width="2"/>
+          <path d="M-8 24 L10 8 H90 L108 24Z" fill="#E8B94A" stroke="#A9781A" stroke-width="2.2" stroke-linejoin="round"/>
+          <path d="M14 8 L30 -6 H70 L86 8Z" fill="#F1CB62" stroke="#A9781A" stroke-width="2.2" stroke-linejoin="round"/>
+          <g fill="#5A2A18"><rect x="16" y="30" width="12" height="18" rx="6"/><rect x="44" y="30" width="12" height="18" rx="6"/><rect x="72" y="30" width="12" height="18" rx="6"/></g>
+        </g>
+        <!-- 천단 -->
+        <g transform="translate(326 186)">
+          <ellipse cx="30" cy="56" rx="30" ry="9" fill="#F3EEE0" stroke="#B8AD90" stroke-width="2"/>
+          <ellipse cx="30" cy="46" rx="22" ry="7" fill="#F3EEE0" stroke="#B8AD90" stroke-width="2"/>
+          <path d="M6 38 Q30 20 54 38 Q30 46 6 38Z" fill="#4B7FB8" stroke="#2F5C8F" stroke-width="2"/>
+          <path d="M12 26 Q30 8 48 26 Q30 34 12 26Z" fill="#5C93CE" stroke="#2F5C8F" stroke-width="2"/>
+          <path d="M19 14 Q30 0 41 14 Q30 20 19 14Z" fill="#6FA5DD" stroke="#2F5C8F" stroke-width="2"/>
+          <circle cx="30" cy="0" r="3.4" fill="#E8B94A"/>
+        </g>
+        <g><rect x="320" y="238" width="44" height="15" rx="7" fill="#fff" stroke="#8FA6BC" stroke-width="1.6"/><text x="342" y="249" text-anchor="middle" font-family="Noto Sans SC,sans-serif" font-weight="700" font-size="10.5" fill="#26333F">天坛</text></g>
+        <!-- 백탑 -->
+        <g transform="translate(96 96)"><path d="M10 28 L14 10 Q20 -2 26 10 L30 28Z" fill="#fff" stroke="#9AA6B2" stroke-width="2"/><rect x="6" y="28" width="28" height="6" fill="#E9E4D4" stroke="#9AA6B2" stroke-width="2"/><circle cx="20" cy="-2" r="2.6" fill="#E8B94A"/></g>
+        <!-- 버스(왕복 이동) -->
+        <g class="bus" transform="translate(120 52)">
+          <rect x="0" y="0" width="38" height="18" rx="4" fill="#3A86D1" stroke="#245E9A" stroke-width="2"/>
+          <g fill="#fff"><rect x="4" y="3" width="7" height="6" rx="1"/><rect x="14" y="3" width="7" height="6" rx="1"/><rect x="24" y="3" width="7" height="6" rx="1"/></g>
+          <circle cx="9" cy="19" r="3.6" fill="#333"/><circle cx="29" cy="19" r="3.6" fill="#333"/>
+        </g>
+        <!-- 자동차 -->
+        <g transform="translate(374 82)"><rect x="0" y="6" width="26" height="10" rx="4" fill="#E5484D" stroke="#A8231C" stroke-width="2"/><path d="M5 6 L9 0 H18 L22 6Z" fill="#F27A7E" stroke="#A8231C" stroke-width="1.8" stroke-linejoin="round"/><circle cx="7" cy="17" r="3" fill="#333"/><circle cx="20" cy="17" r="3" fill="#333"/></g>
+        <!-- 자전거 소녀 -->
+        <g transform="translate(404 168)">
+          <circle cx="18" cy="68" r="17" fill="none" stroke="#333" stroke-width="3.4"/><circle cx="76" cy="68" r="17" fill="none" stroke="#333" stroke-width="3.4"/>
+          <path d="M18 68 L40 68 L58 40 L70 40 M40 68 L50 42 M58 40 L76 68" fill="none" stroke="#E5484D" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M50 42 L46 34 M66 40 L70 30" stroke="#333" stroke-width="3.4" stroke-linecap="round"/>
+          <path d="M44 14 Q50 8 58 12 L62 38 L48 42 Z" fill="#8E6BB8" stroke="#5E3F8A" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M52 38 L66 28 M52 40 L44 60" stroke="#5E3F8A" stroke-width="4.4" stroke-linecap="round"/>
+          <rect x="36" y="14" width="12" height="20" rx="4" fill="#6DB06A" stroke="#46853F" stroke-width="1.8"/>
+          <circle cx="56" cy="2" r="9" fill="#FFD9B8" stroke="#C99A6B" stroke-width="2"/>
+          <path d="M46 2 Q56 -12 67 2 Z" fill="#F472B6" stroke="#C0306F" stroke-width="2" stroke-linejoin="round"/>
+        </g>
+      </g>
+      <rect x="1.5" y="1.5" width="517" height="259" rx="19" fill="none" stroke="#C9B77E" stroke-width="3"/>
+    </svg>
+    <div class="eyebrow">중국어 단어 익히기 · 5과 · 계획 세우기</div>
+    <h1>你打算做什么?</h1>
+    <div class="pinyin-title">Nǐ dǎsuan zuò shénme?</div>
+    <svg class="ecg" viewBox="0 0 520 30" aria-hidden="true"><path d="M30 16 H490" fill="none" stroke="#F08A45" stroke-width="3" stroke-linecap="round"/><circle cx="22" cy="16" r="7" fill="#46688A"/><circle cx="22" cy="16" r="2.6" fill="#fff"/><path d="M498 22 q-9 -10 -9 -17 a9 9 0 1 1 18 0 q0 7 -9 17z" fill="#E5484D" stroke="#A8231C" stroke-width="1.6"/><circle cx="498" cy="6" r="3" fill="#fff"/></svg>
+    <div class="subtitle">뜻 고르기 → 성조 맞히기 → 카드 뒤집기 · 원하는 단계까지 풀고 제출해요</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-mode="quiz">✏️ 퀴즈 풀기</button>
+    <button class="tab-btn" data-mode="leaderboard">🏆 우리 반 리더보드</button>
+    <button class="tab-btn" data-mode="teacher">🧭 교사용</button>
+  </div>
+
+  <div id="stage-quiz"></div>
+  <div id="stage-leaderboard" class="hidden"></div>
+  <div id="stage-teacher" class="hidden"></div>
+
+  <footer>5과 전용 퀴즈 · 다른 과와 기록이 분리되어 있어요</footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ 설정 ============
+   구글 앱스 스크립트 웹 앱 주소를 아래 따옴표 안에 붙여넣으세요.
+   비워두면 '연습(데모) 모드'로 동작하며, 기록은 그 기기의 브라우저에만 저장됩니다. */
+const SHEET_WEBHOOK_URL = "";
+const DEMO_TEACHER_PW = "demo";   // 데모 모드에서만 쓰는 교사용 비밀번호
+
+const ROUND_COUNT = 4;
+const CLASSES = [
+  {id:1,label:'1반'},{id:2,label:'2반'},{id:3,label:'5,6합반'},{id:4,label:'7반'},{id:5,label:'8반'}
+];
+const classLabel = id => (CLASSES.find(c=>c.id===Number(id))||{label:id+'반'}).label;
+/* 반별 링크: 주소 뒤에 ?class=3 처럼 붙이면 그 반으로 고정됩니다 */
+const LOCK_CLS = (()=>{ try{ const v=parseInt(new URLSearchParams(location.search).get('class'),10); return CLASSES.some(c=>c.id===v)?v:null; }catch(e){ return null; } })();
+
+const PHASES = [
+  {id:'mean',label:'🚌 한자 보고 뜻 고르기'},
+  {id:'tone',label:'🔔 성조 맞히기'},
+  {id:'flip',label:'🃏 카드 뒤집기'}
+];
+
+const VOCAB = {
+  1: { title: "1회차 · 주말 계획 세우기", words: [
+    {hanzi:"星期六", pinyin:"xīngqīliù", meaning:"토요일"},
+    {hanzi:"打算", pinyin:"dǎsuan", meaning:"~할 계획이다"},
+    {hanzi:"颐和园", pinyin:"Yíhé Yuán", meaning:"이허위안"},
+    {hanzi:"听说", pinyin:"tīngshuō", meaning:"듣자 하니"},
+    {hanzi:"那里", pinyin:"nàli", meaning:"그곳, 저곳"},
+    {hanzi:"给", pinyin:"gěi", meaning:"~에게, ~을(를) 위하여"},
+    {hanzi:"导游", pinyin:"dǎoyóu", meaning:"여행 가이드"},
+    {hanzi:"荣幸", pinyin:"róngxìng", meaning:"영광스럽다"},
+    {hanzi:"在", pinyin:"zài", meaning:"~에서"},
+    {hanzi:"学校", pinyin:"xuéxiào", meaning:"학교"},
+    {hanzi:"门口", pinyin:"ménkǒu", meaning:"입구"}
+  ]},
+  2: { title: "2회차 · 이허위안 나들이", words: [
+    {hanzi:"公交车", pinyin:"gōngjiāochē", meaning:"버스"},
+    {hanzi:"比", pinyin:"bǐ", meaning:"~보다"},
+    {hanzi:"地铁", pinyin:"dìtiě", meaning:"지하철"},
+    {hanzi:"方便", pinyin:"fāngbiàn", meaning:"편리하다"},
+    {hanzi:"张", pinyin:"Zhāng", meaning:"장[성씨]"},
+    {hanzi:"开始", pinyin:"kāishǐ", meaning:"시작하다"},
+    {hanzi:"然后", pinyin:"ránhòu", meaning:"그 다음에"},
+    {hanzi:"长廊", pinyin:"Chángláng", meaning:"창랑(이허위안에 있는 긴 복도)", noTTS:true},
+    {hanzi:"爬", pinyin:"pá", meaning:"오르다"},
+    {hanzi:"万寿山", pinyin:"Wànshòu Shān", meaning:"완서우산(이허위안에 있는 인공 산)"},
+    {hanzi:"还", pinyin:"hái", meaning:"더, 또", noTTS:true},
+    {hanzi:"船", pinyin:"chuán", meaning:"배"},
+    {hanzi:"包", pinyin:"bāo", meaning:"도맡다, 책임지다"},
+    {hanzi:"身上", pinyin:"shēnshang", meaning:"몸, 자신"}
+  ]},
+  3: { title: "3회차 · 책과 강 이야기", words: [
+    {hanzi:"翻译", pinyin:"fānyì", meaning:"통역하다"},
+    {hanzi:"推荐", pinyin:"tuījiàn", meaning:"추천하다"},
+    {hanzi:"本", pinyin:"běn", meaning:"권[단위]"},
+    {hanzi:"小说", pinyin:"xiǎoshuō", meaning:"소설책"},
+    {hanzi:"长江", pinyin:"Cháng Jiāng", meaning:"창장강", noTTS:true},
+    {hanzi:"黄河", pinyin:"Huáng Hé", meaning:"황허강"},
+    {hanzi:"长", pinyin:"cháng", meaning:"길다", noTTS:true},
+    {hanzi:"她", pinyin:"tā", meaning:"그녀"},
+    {hanzi:"汉语", pinyin:"Hànyǔ", meaning:"중국어"},
+    {hanzi:"水平", pinyin:"shuǐpíng", meaning:"수준"},
+    {hanzi:"高", pinyin:"gāo", meaning:"높다"},
+    {hanzi:"那个", pinyin:"nàge", meaning:"그것, 저것"},
+    {hanzi:"简单", pinyin:"jiǎndān", meaning:"쉽다, 간단하다"}
+  ]},
+  4: { title: "4회차 · 외국어 공부 계획", words: [
+    {hanzi:"拍", pinyin:"pāi", meaning:"찍다"},
+    {hanzi:"视频", pinyin:"shìpín", meaning:"동영상"},
+    {hanzi:"学", pinyin:"xué", meaning:"배우다"},
+    {hanzi:"外语", pinyin:"wàiyǔ", meaning:"외국어"},
+    {hanzi:"考", pinyin:"kǎo", meaning:"시험 보다"},
+    {hanzi:"HSK(汉语水平考试)", pinyin:"Hànyǔ shuǐpíng kǎoshì", meaning:"중국어 능력 시험", say:"汉语水平考试"},
+    {hanzi:"洗", pinyin:"xǐ", meaning:"씻다"},
+    {hanzi:"手", pinyin:"shǒu", meaning:"손"},
+    {hanzi:"饭", pinyin:"fàn", meaning:"밥"},
+    {hanzi:"作业", pinyin:"zuòyè", meaning:"숙제"},
+    {hanzi:"讨论", pinyin:"tǎolùn", meaning:"토론하다"},
+    {hanzi:"决定", pinyin:"juédìng", meaning:"결정하다"}
+  ]}
+};
+
+
+/* ============ 공통 도구 ============ */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function shuffle(a){ const b=a.slice(); for(let i=b.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [b[i],b[j]]=[b[j],b[i]]; } return b; }
+function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),2400); }
+const medal = i => i===0?'🥇':i===1?'🥈':i===2?'🥉':String(i+1);
+const SPEECH_OK = ('speechSynthesis' in window) && (typeof SpeechSynthesisUtterance !== 'undefined');
+function fmtTime(ts){ return new Date(ts).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}); }
+const pct = r => r.totalMax>0 ? Math.round(r.totalScore/r.totalMax*1000)/10 : 0;
+
+function classSelectHTML(id, withAll){
+  if(LOCK_CLS && !withAll) return `<span class="chip-lock" id="${id}-lock">${classLabel(LOCK_CLS)}</span><input type="hidden" id="${id}" value="${LOCK_CLS}">`;
+  return `<select id="${id}">${withAll?'<option value="all">전체 반</option>':''}${CLASSES.map(c=>`<option value="${c.id}">${c.label}</option>`).join('')}</select>`;
+}
+
+/* ============ 저장소: 구글시트(앱스 스크립트) 또는 데모(브라우저) ============ */
+const DEMO_KEY='l5_demo_rows_v1'; const memRows=[];
+function demoRows(){ try{ const s=localStorage.getItem(DEMO_KEY); if(s) return JSON.parse(s); }catch(e){} return memRows; }
+function demoSave(rows){ try{ localStorage.setItem(DEMO_KEY,JSON.stringify(rows)); }catch(e){ memRows.length=0; rows.forEach(r=>memRows.push(r)); } }
+function demoApi(p){
+  const rows=demoRows();
+  if(p.action==='submit'){
+    if(rows.some(r=>r.uid===p.uid)) return {status:'ok',attemptNo:rows.find(r=>r.uid===p.uid).attemptNo};
+    const attemptNo=rows.filter(r=>String(r.cls)===String(p.cls)&&String(r.studentId)===String(p.studentId)&&Number(r.round)===Number(p.round)).length+1;
+    rows.push({ts:Date.now(),cls:p.cls,studentId:String(p.studentId),name:p.name,round:p.round,roundTitle:p.roundTitle,attemptNo,
+      phasesCompleted:p.phasesCompleted,phasesTotal:p.phasesTotal,p:p.p,totalScore:p.totalScore,totalMax:p.totalMax,uid:p.uid});
+    demoSave(rows); return {status:'ok',attemptNo};
+  }
+  if(p.action==='class') return {status:'ok',rows:rows.filter(r=>String(r.cls)===String(p.cls))};
+  if(p.action==='teacher') return p.pw===DEMO_TEACHER_PW ? {status:'ok',rows} : {status:'unauthorized'};
+  return {status:'error',message:'unknown'};
+}
+async function api(payload){
+  if(!SHEET_WEBHOOK_URL) return demoApi(payload);
+  try{
+    const res=await fetch(SHEET_WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
+    return await res.json();
+  }catch(e){ console.error('api error',e); return {status:'error',message:'network'}; }
+}
+const demoBanner = () => SHEET_WEBHOOK_URL ? '' :
+  `<div class="warn">⚠️ <b>연습(데모) 모드</b>입니다. 구글시트 주소가 설정되지 않아 기록이 이 기기의 브라우저에만 저장돼요. 학생 배포 전에 <code>SHEET_WEBHOOK_URL</code>을 설정해주세요.</div>`;
+
+/* ============ 탭 ============ */
+const tabBtns=document.querySelectorAll('.tab-btn');
+const stages={quiz:'stage-quiz',leaderboard:'stage-leaderboard',teacher:'stage-teacher'};
+tabBtns.forEach(b=>b.addEventListener('click',()=>{
+  tabBtns.forEach(x=>x.classList.remove('active')); b.classList.add('active');
+  Object.values(stages).forEach(id=>$(id).classList.add('hidden'));
+  $(stages[b.dataset.mode]).classList.remove('hidden');
+  if(b.dataset.mode==='quiz' && !session) renderQuizStart();
+  if(b.dataset.mode==='leaderboard') renderLeaderboardTab();
+  if(b.dataset.mode==='teacher') renderTeacherTab();
+}));
+
+/* ============ 퀴즈 ============ */
+let session=null;
+
+function renderQuizStart(){
+  session=null;
+  const rounds=Array.from({length:ROUND_COUNT},(_,i)=>i+1);
+  $('stage-quiz').innerHTML=`
+    <div class="panel card">
+      <h2>🗺️ 여행 떠나기</h2>
+      ${demoBanner()}
+      <div class="row">
+        <div><div class="field-label">학급</div>${classSelectHTML('class-select',false)}</div>
+        <div><div class="field-label">학번</div><input type="text" id="student-id" placeholder="예: 10203" inputmode="numeric" maxlength="12" style="width:130px"></div>
+        <div><div class="field-label">이름</div><input type="text" id="student-name" placeholder="이름" maxlength="20" style="width:130px"></div>
+        <div><div class="field-label">회차</div>
+          <select id="round-select">${rounds.map(n=>`<option value="${n}">${esc(VOCAB[n].title)} (${VOCAB[n].words.length}단어)</option>`).join('')}</select></div>
+      </div>
+      <div class="row" style="margin-top:14px"><button class="btn blue" id="start-btn">여행 출발! →</button></div>
+      <p class="muted">✽ 단계가 끝날 때마다 "여기서 제출하고 마치기"를 고를 수 있어요. 여러 번 다시 도전하면 내 성장 기록이 쌓여요.</p>
+    </div>`;
+  $('start-btn').addEventListener('click',()=>{
+    const cls=parseInt($('class-select').value,10);
+    const studentId=$('student-id').value.trim(), name=$('student-name').value.trim();
+    const round=parseInt($('round-select').value,10);
+    if(!/^[0-9A-Za-z\-]{1,12}$/.test(studentId)){ toast('학번은 숫자/영문 12자 이내로 입력해주세요'); return; }
+    if(!name){ toast('이름을 입력해주세요'); return; }
+    session={cls,studentId,name,round,title:VOCAB[round].title,words:VOCAB[round].words,wordCount:VOCAB[round].words.length,
+      phaseIndex:0, phaseScores:[], uid:Date.now().toString(36)+Math.random().toString(36).slice(2,8)};
+    runPhase();
+  });
+}
+
+function pillsHTML(){
+  return `<div class="phase-track">${PHASES.map((p,i)=>`<div class="pill ${i<session.phaseIndex?'done':i===session.phaseIndex?'active':''}">${p.label}</div>`).join('')}</div>`;
+}
+const whoLine = () => `${esc(session.title)} · ${classLabel(session.cls)} ${esc(session.studentId)} ${esc(session.name)}님`;
+function runPhase(){ const id=PHASES[session.phaseIndex].id; if(id==='mean') initMean(); else if(id==='tone') initTone(); else initFlip(); }
+function phaseDone(score){
+  session.phaseScores.push(score);
+  if(session.phaseIndex===PHASES.length-1) finishQuiz(); else renderInterstitial();
+}
+function renderInterstitial(){
+  const ph=PHASES[session.phaseIndex], sc=session.phaseScores[session.phaseIndex];
+  $('stage-quiz').innerHTML=`
+    <div class="panel card finish center">
+      ${pillsHTML()}
+      <h2>${ph.label} 완료!</h2>
+      <div class="score-big">이번 단계 ${sc} / ${session.wordCount}</div>
+      <p class="muted">다음 단계까지 풀수록 총점이 올라가 순위에 유리해요.<br>여기서 마쳐도 지금까지의 점수는 그대로 제출됩니다.</p>
+      <div class="row" style="justify-content:center;margin-top:14px">
+        <button class="btn ghost" id="stop-btn">여기서 제출하고 마치기</button>
+        <button class="btn blue" id="go-btn">다음 단계 계속하기 →</button>
+      </div>
+    </div>`;
+  $('stop-btn').addEventListener('click',finishQuiz);
+  $('go-btn').addEventListener('click',()=>{ session.phaseIndex++; runPhase(); });
+}
+
+/* --- 1단계: 한자 보고 뜻 고르기 --- */
+let L=null;
+function speak(w){
+  if(!SPEECH_OK) return;
+  try{
+    const u=new SpeechSynthesisUtterance(w.say||w.hanzi); u.lang='zh-CN'; u.rate=0.8;
+    const v=speechSynthesis.getVoices().find(v=>/^zh/i.test(v.lang)); if(v) u.voice=v;
+    speechSynthesis.cancel(); speechSynthesis.speak(u);
+  }catch(e){}
+}
+function initMean(){ L={order:shuffle(session.words.map((_,i)=>i)),i:0,score:0}; renderMean(); }
+function renderMean(){
+  if(L.i>=L.order.length){ phaseDone(L.score); return; }
+  const w=session.words[L.order[L.i]];
+  const pool=[...new Set(session.words.map(x=>x.meaning).filter(m=>m!==w.meaning))];
+  const options=shuffle([w.meaning,...shuffle(pool).slice(0,3)]);
+  const canSpeak=SPEECH_OK && !w.noTTS;
+  $('stage-quiz').innerHTML=`
+    <div class="panel card center">
+      ${pillsHTML()}
+      <div class="progress">${whoLine()} · ${L.i+1}/${L.order.length}</div>
+      <div class="big-hanzi">${esc(w.hanzi)}</div>
+      <div class="big-pinyin">${esc(w.pinyin)}</div>
+      ${canSpeak?'<button class="mini-play" id="play-btn">🔊 발음 듣기</button>':''}
+      <div class="options">${options.map(o=>`<button class="opt" data-v="${encodeURIComponent(o)}">${esc(o)}</button>`).join('')}</div>
+      <button class="btn blue next" id="next-btn">다음 →</button>
+    </div>`;
+  if(canSpeak) $('play-btn').addEventListener('click',()=>speak(w));
+  document.querySelectorAll('#stage-quiz .opt').forEach(b=>b.addEventListener('click',()=>{
+    const v=decodeURIComponent(b.dataset.v);
+    document.querySelectorAll('#stage-quiz .opt').forEach(x=>{ x.disabled=true; if(decodeURIComponent(x.dataset.v)===w.meaning) x.classList.add('correct'); });
+    if(v===w.meaning) L.score++; else b.classList.add('wrong');
+    $('next-btn').classList.add('show');
+  }));
+  $('next-btn').addEventListener('click',()=>{ L.i++; renderMean(); });
+}
+
+/* --- 2단계: 성조 맞히기 (한자를 보고 올바른 병음 고르기) --- */
+const TONES={a:'āáǎà',e:'ēéěè',i:'īíǐì',o:'ōóǒò',u:'ūúǔù','ü':'ǖǘǚǜ'};
+const TONE_REV={}; Object.keys(TONES).forEach(b=>[...TONES[b]].forEach((c,k)=>{ TONE_REV[c]={b,t:k}; }));
+function toneVariants(py){
+  const ch=[...py], cand=new Set(), pos=[];
+  ch.forEach((c,i)=>{ if(TONE_REV[c]) pos.push(i); });
+  if(!pos.length){
+    let k=ch.findIndex(c=>'aeo'.includes(c));
+    if(k<0){ for(let i=ch.length-1;i>=0;i--) if('iuü'.includes(ch[i])){ k=i; break; } }
+    if(k>=0) for(let t=0;t<4;t++){ const c2=ch.slice(); c2[k]=TONES[ch[k]][t]; cand.add(c2.join('')); }
+  } else {
+    pos.forEach(k=>{ const r=TONE_REV[ch[k]]; for(let t=0;t<4;t++){ if(t===r.t) continue; const c2=ch.slice(); c2[k]=TONES[r.b][t]; cand.add(c2.join('')); } });
+  }
+  cand.delete(py); return [...cand];
+}
+let P=null;
+function initTone(){ P={order:shuffle(session.words.map((_,i)=>i)),i:0,score:0}; renderTone(); }
+function renderTone(){
+  if(P.i>=P.order.length){ phaseDone(P.score); return; }
+  const w=session.words[P.order[P.i]];
+  const options=shuffle([w.pinyin,...shuffle(toneVariants(w.pinyin)).slice(0,3)]);
+  $('stage-quiz').innerHTML=`
+    <div class="panel card center">
+      ${pillsHTML()}
+      <div class="progress">${whoLine()} · ${P.i+1}/${P.order.length}</div>
+      <div class="prompt-meaning">${esc(w.meaning)}</div>
+      <div class="big-hanzi" style="font-size:clamp(40px,9vw,62px)">${esc(w.hanzi)}</div>
+      <div class="note">성조(소리의 높낮이)까지 정확한 병음을 골라요</div>
+      <div class="options">${options.map(o=>`<button class="opt pyopt" data-v="${encodeURIComponent(o)}">${esc(o)}</button>`).join('')}</div>
+      <div class="fb" id="fb"></div>
+      <button class="btn blue next" id="next-btn">다음 →</button>
+    </div>`;
+  document.querySelectorAll('#stage-quiz .opt').forEach(b=>b.addEventListener('click',()=>{
+    const v=decodeURIComponent(b.dataset.v), ok=v===w.pinyin;
+    document.querySelectorAll('#stage-quiz .opt').forEach(x=>{ x.disabled=true; if(decodeURIComponent(x.dataset.v)===w.pinyin) x.classList.add('correct'); });
+    if(ok) P.score++; else b.classList.add('wrong');
+    $('fb').className='fb '+(ok?'ok':'no'); $('fb').textContent=ok?'정답이에요! 👏':`정답은 ${w.pinyin} 예요.`;
+    $('next-btn').classList.add('show');
+  }));
+  $('next-btn').addEventListener('click',()=>{ P.i++; renderTone(); });
+}
+
+/* --- 3단계: 카드 뒤집기 (한자 카드 ↔ 뜻 카드 짝 찾기) --- */
+let F=null;
+function initFlip(){
+  const idx=shuffle(session.words.map((_,i)=>i)); const chunks=[];
+  for(let i=0;i<idx.length;i+=4) chunks.push(idx.slice(i,i+4));
+  if(chunks.length>1 && chunks[chunks.length-1].length===1){ const last=chunks.pop(); chunks[chunks.length-1].push(last[0]); }
+  F={chunks,c:0,score:0}; renderFlip();
+}
+function renderFlip(){
+  if(F.c>=F.chunks.length){ phaseDone(F.score); return; }
+  const ids=F.chunks[F.c], pairs=ids.length;
+  const cards=shuffle(ids.flatMap(i=>[{wi:i,t:'h'},{wi:i,t:'m'}]));
+  let open=[], matched=0, mism=0, busy=false;
+  $('stage-quiz').innerHTML=`
+    <div class="panel card center">
+      ${pillsHTML()}
+      <div class="progress">${whoLine()} · 판 ${F.c+1}/${F.chunks.length}</div>
+      <div class="note">카드를 두 장씩 뒤집어 한자 카드와 뜻 카드의 짝을 찾아요. 틀린 횟수가 ${pairs}번을 넘으면 1번마다 1점씩 줄어요.</div>
+      <div class="counter" id="cnt">틀린 횟수 0 / ${pairs}</div>
+      <div class="fgrid">${cards.map((c,n)=>{ const w=session.words[c.wi];
+        const face=c.t==='h'?`<span class="h">${esc(w.hanzi)}</span><span class="p">${esc(w.pinyin)}</span>`:`<span class="m">${esc(w.meaning)}</span>`;
+        return `<button class="fcard" data-n="${n}"><span class="back">🧭</span><span class="face">${face}</span></button>`; }).join('')}</div>
+    </div>`;
+  const els=[...document.querySelectorAll('#stage-quiz .fcard')];
+  els.forEach(el=>el.addEventListener('click',()=>{
+    const n=Number(el.dataset.n);
+    if(busy||el.classList.contains('up')||el.classList.contains('done')) return;
+    el.classList.add('up'); open.push(n);
+    if(open.length<2) return;
+    const [x,y]=open, a=cards[x], b=cards[y];
+    if(a.wi===b.wi && a.t!==b.t){
+      els[x].classList.add('done'); els[y].classList.add('done'); open=[]; matched++;
+      if(matched===pairs){
+        F.score+=Math.max(0,Math.min(pairs,pairs-Math.max(0,mism-pairs)));
+        setTimeout(()=>{ F.c++; renderFlip(); },800);
+      }
+    } else {
+      mism++; busy=true; els[x].classList.add('bad'); els[y].classList.add('bad');
+      const cnt=$('cnt'); cnt.textContent=`틀린 횟수 ${mism} / ${pairs}`; cnt.classList.toggle('over',mism>pairs);
+      setTimeout(()=>{ els[x].classList.remove('up','bad'); els[y].classList.remove('up','bad'); open=[]; busy=false; },900);
+    }
+  }));
+}
+
+/* --- 제출 + 성장 안내 --- */
+async function finishQuiz(){
+  const st=session; const el=$('stage-quiz');
+  el.innerHTML=`<div class="panel"><div class="loading">점수를 저장하는 중...</div></div>`;
+  const done=st.phaseScores.length;
+  const totalScore=st.phaseScores.reduce((a,b)=>a+b,0), totalMax=done*st.wordCount;
+  const payload={action:'submit',uid:st.uid,cls:st.cls,studentId:st.studentId,name:st.name,round:st.round,roundTitle:st.title,
+    phasesCompleted:done,phasesTotal:PHASES.length,p:[0,1,2].map(i=>st.phaseScores[i]==null?null:st.phaseScores[i]),totalScore,totalMax};
+  const res=await api(payload);
+  const ok=res&&res.status==='ok';
+  let growthHTML='';
+  if(ok){
+    const cr=await api({action:'class',cls:st.cls});
+    if(cr&&cr.status==='ok'){
+      const mine=cr.rows.filter(r=>String(r.studentId)===String(st.studentId)&&Number(r.round)===st.round&&r.attemptNo<res.attemptNo).sort((a,b)=>a.attemptNo-b.attemptNo);
+      const cur={totalScore,totalMax,phasesCompleted:done,p:payload.p};
+      if(mine.length){
+        const prev=mine[mine.length-1], k=Math.max(1,Math.min(done,prev.phasesCompleted||1));
+        const nowA=accOver(cur,k), prevA=accOver(prev,k), diff=Math.round((nowA-prevA)*10)/10;
+        const bestPrevScore=Math.max(...mine.map(r=>r.totalScore));
+        growthHTML=`<div class="growth"><div class="g">이번 (${res.attemptNo}번째)<b>${nowA}%</b></div><div class="g">지난번<b>${prevA}%</b></div>
+          <div class="g">변화<b>${diff>0?'+':''}${diff}%p ${diff>0?'📈':diff<0?'📉':'➖'}</b></div></div>
+          <p class="muted">같은 ${k}단계 기준으로 비교했어요.<br>${totalScore>bestPrevScore?'🎉 내 최고 점수를 갈아치웠어요!':diff>=0?'꾸준히 잘하고 있어요. 한 번 더 도전해볼까요?':'괜찮아요! 틀린 단어를 떠올리며 다시 도전해봐요.'}</p>`;
+      } else growthHTML=`<p class="muted">첫 도전 기록이 저장됐어요 ✨ 다시 도전하면 내 성장이 눈에 보여요!</p>`;
+    }
+  }
+  const bd=st.phaseScores.map((s,i)=>`<div>${PHASES[i].label}<b>${s} / ${st.wordCount}</b></div>`).join('');
+  el.innerHTML=`
+    <div class="panel card finish center">
+      <h2>${esc(st.title)} ${done===PHASES.length?'전체 완료':'제출 완료'}!</h2>
+      <div class="score-big">${classLabel(st.cls)} ${esc(st.studentId)} ${esc(st.name)}님 · ${totalScore} / ${totalMax}</div>
+      <div class="muted">${done}/${PHASES.length}단계 완료</div>
+      <div class="breakdown">${bd}</div>
+      ${ok?`<div class="ok-box">✅ 기록이 저장되었어요${SHEET_WEBHOOK_URL?'':' (데모 모드: 이 기기에만 저장)'}</div>${growthHTML}`
+          :`<div class="err">⚠️ 저장에 실패했어요. 인터넷 연결을 확인하고 <b>다시 제출</b>을 눌러주세요. (이 화면을 닫으면 이번 점수는 사라져요)</div>`}
+      <div class="row" style="justify-content:center;margin-top:12px">
+        ${ok?'':'<button class="btn pink" id="retry-save">다시 제출</button>'}
+        <button class="btn blue" id="goto-lb">리더보드 보기 🏆</button>
+        <button class="btn ghost" id="again">다시 도전</button>
+      </div>
+    </div>`;
+  if(!ok) $('retry-save').addEventListener('click',finishQuiz);
+  $('goto-lb').addEventListener('click',()=>document.querySelector('.tab-btn[data-mode="leaderboard"]').click());
+  $('again').addEventListener('click',renderQuizStart);
+}
+
+/* ============ 공통 계산 ============ */
+function bestMap(rows){
+  const m=new Map(), cnt=new Map();
+  rows.forEach(r=>{
+    const k=r.cls+'|'+r.studentId+'|'+r.round; cnt.set(k,(cnt.get(k)||0)+1);
+    const c=m.get(k); if(!c||r.totalScore>c.totalScore||(r.totalScore===c.totalScore&&r.ts<c.ts)) m.set(k,r);
+  });
+  return {best:m,cnt};
+}
+function rankRows(rows,view){
+  const {best,cnt}=bestMap(rows);
+  if(view==='all'){
+    const per=new Map();
+    best.forEach((r,k)=>{
+      const sk=r.cls+'|'+r.studentId; if(!per.has(sk)) per.set(sk,{cls:r.cls,studentId:r.studentId,name:r.name,score:0,max:0,rounds:0,tries:0,ts:0});
+      const p=per.get(sk); p.score+=r.totalScore; p.max+=r.totalMax; p.rounds++; p.tries+=cnt.get(k); if(r.ts>=p.ts){p.ts=r.ts;p.name=r.name;}
+    });
+    return [...per.values()].sort((a,b)=>b.score-a.score||b.rounds-a.rounds||(a.max?b.score/b.max-a.score/a.max:0));
+  }
+  const out=[]; best.forEach((r,k)=>{ if(Number(r.round)===Number(view)) out.push({cls:r.cls,studentId:r.studentId,name:r.name,score:r.totalScore,max:r.totalMax,phases:r.phasesCompleted,phasesTotal:r.phasesTotal,tries:cnt.get(k),ts:r.ts}); });
+  return out.sort((a,b)=>b.score-a.score||a.ts-b.ts);
+}
+function rankTable(list,view,withClass){
+  if(!list.length) return `<p class="muted">아직 저장된 기록이 없어요.</p>`;
+  const mx=Math.max(...list.map(l=>l.score),1);
+  return `<div class="tbl-wrap"><table><thead><tr><th>순위</th>${withClass?'<th>반</th>':''}<th>학번</th><th>이름</th><th>점수</th><th>${view==='all'?'참여 회차':'완료 단계'}</th><th>도전</th><th style="width:22%">달성</th></tr></thead><tbody>
+    ${list.map((l,i)=>`<tr><td class="rk">${medal(i)}</td>${withClass?`<td>${classLabel(l.cls)}</td>`:''}<td>${esc(l.studentId)}</td><td><b>${esc(l.name)}</b></td>
+      <td>${l.score} / ${l.max}</td><td>${view==='all'?l.rounds+'회차':l.phases+'/'+l.phasesTotal}</td><td>${l.tries}회</td>
+      <td><div class="bar"><i style="width:${(l.score/mx*100).toFixed(0)}%"></i></div></td></tr>`).join('')}</tbody></table></div>`;
+}
+
+/* ============ 학생용 리더보드(우리 반만) ============ */
+async function renderLeaderboardTab(){
+  const el=$('stage-leaderboard');
+  el.innerHTML=`<div class="panel card">
+    <div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">🏆 우리 반 리더보드</h2>
+    <div class="row" style="margin:0">${classSelectHTML('lb-class',false)}
+      <select id="lb-view"><option value="all">전체 누적</option>${Array.from({length:ROUND_COUNT},(_,i)=>`<option value="${i+1}">${esc(VOCAB[i+1].title)}</option>`).join('')}</select>
+      <button class="btn ghost" id="lb-refresh">새로고침</button></div></div>
+    ${demoBanner()}<div id="lb-body"><div class="loading">불러오는 중...</div></div></div>`;
+  const load=async()=>{
+    const cls=parseInt($('lb-class').value,10), view=$('lb-view').value;
+    $('lb-body').innerHTML=`<div class="loading">불러오는 중...</div>`;
+    const r=await api({action:'class',cls});
+    if(!r||r.status!=='ok'){ $('lb-body').innerHTML=`<div class="err">리더보드를 불러오지 못했어요. 잠시 후 새로고침을 눌러주세요.</div>`; return; }
+    $('lb-body').innerHTML=rankTable(rankRows(r.rows,view),view,false)+`<p class="muted">✽ 같은 회차를 여러 번 풀면 가장 높은 점수가 순위에 반영돼요. 도전 횟수는 참고용이에요.</p>`;
+  };
+  if($('lb-class').tagName==='SELECT') $('lb-class').addEventListener('change',load);
+  $('lb-view').addEventListener('change',load); $('lb-refresh').addEventListener('click',load);
+  load();
+}
+
+/* ============ 교사용 ============ */
+let T={pw:null,rows:[],tab:'rank',cls:'all',round:'all',sort:'delta'};
+
+function renderTeacherTab(){
+  if(!T.pw){
+    $('stage-teacher').innerHTML=`<div class="panel card">
+      <h2>🧭 교사용 대시보드</h2>${demoBanner()}
+      <p class="muted">전체 반 순위, 학생별 성장 기록, 학급 요약을 볼 수 있어요. 비밀번호는 앱스 스크립트의 <code>TEACHER_PASSWORD</code> 값입니다${SHEET_WEBHOOK_URL?'':` (데모 모드 비밀번호: <b>${DEMO_TEACHER_PW}</b>)`}.</p>
+      <div class="row"><input type="password" id="pw" placeholder="교사용 비밀번호" autocomplete="off"><button class="btn blue" id="pw-btn">열기</button></div>
+      <div id="pw-msg"></div></div>`;
+    const go=async()=>{
+      const pw=$('pw').value; if(!pw) return; $('pw-msg').innerHTML=`<div class="loading">확인 중...</div>`;
+      const r=await api({action:'teacher',pw});
+      if(r&&r.status==='ok'){ T.pw=pw; T.rows=r.rows||[]; renderTeacherMain(); }
+      else if(r&&r.status==='unauthorized') $('pw-msg').innerHTML=`<div class="err">비밀번호가 맞지 않아요.</div>`;
+      else $('pw-msg').innerHTML=`<div class="err">서버에 연결하지 못했어요. 주소 설정과 인터넷 연결을 확인해주세요.</div>`;
+    };
+    $('pw-btn').addEventListener('click',go); $('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') go(); });
+  } else renderTeacherMain();
+}
+
+function groupAttempts(rows){
+  const g=new Map();
+  rows.forEach(r=>{ const k=r.cls+'|'+r.studentId+'|'+r.round; if(!g.has(k)) g.set(k,[]); g.get(k).push(r); });
+  g.forEach(a=>a.sort((x,y)=>x.ts-y.ts));
+  return g;
+}
+/* 성장 비교는 '같은 단계'끼리만: 1단계만 푼 시도와 3단계까지 푼 시도를 그대로 비교하면 왜곡되기 때문 */
+function accOver(r,k){
+  const wc=r.phasesCompleted?r.totalMax/r.phasesCompleted:0;
+  if(!wc||!Array.isArray(r.p)) return pct(r);
+  let s=0; for(let i=0;i<k;i++){ const v=r.p[i]; if(v==null) return pct(r); s+=Number(v); }
+  return Math.round(s/(k*wc)*1000)/10;
+}
+function statOf(att){
+  const k=Math.max(1,Math.min(...att.map(a=>a.phasesCompleted||1)));
+  const ps=att.map(a=>accOver(a,k)), n=att.length, first=ps[0], last=ps[n-1], best=Math.max(...ps), delta=Math.round((last-first)*10)/10;
+  let st; if(n<2) st={k:'one',label:'첫 도전',cls:'b-one'}; else if(delta>=10) st={k:'up',label:'📈 향상',cls:'b-up'}; else if(delta<=-10) st={k:'down',label:'📉 하락',cls:'b-down'}; else st={k:'keep',label:'➖ 유지',cls:'b-keep'};
+  const attention = st.k==='down' || best<60;
+  return {n,k,first,last,best,delta,st,attention,ps};
+}
+function spark(ps){
+  const w=96,h=30,pad=4; if(!ps.length) return '';
+  const x=i=>ps.length===1?w/2:pad+i*(w-2*pad)/(ps.length-1), y=v=>h-pad-(v/100)*(h-2*pad);
+  const pts=ps.map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+  const col=ps.length>1&&ps[ps.length-1]>=ps[0]?'#2E9E6B':'#E5484D';
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-label="시도별 정답률 추이"><line x1="0" y1="${y(60)}" x2="${w}" y2="${y(60)}" stroke="#E8DDB9" stroke-dasharray="3 3"/>
+    ${ps.length>1?`<polyline points="${pts}" fill="none" stroke="${col}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>`:''}
+    ${ps.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="${i===ps.length-1?3.6:2.6}" fill="${i===ps.length-1?col:'#fff'}" stroke="${col}" stroke-width="1.6"/>`).join('')}</svg>`;
+}
+function heat(v){ if(v==null) return `<span class="cell" style="background:#F2EDDE;color:#9A9578">-</span>`;
+  const bg=v>=85?'#DCF5E8':v>=60?'#FFF4D1':'#FFE3E3', fg=v>=85?'#0E6B45':v>=60?'#7A5500':'#9B1C1F';
+  return `<span class="cell" style="background:${bg};color:${fg}">${v}%</span>`; }
+
+function teacherFiltered(){ return T.rows.filter(r=>T.cls==='all'||String(r.cls)===String(T.cls)); }
+
+function renderTeacherMain(){
+  const el=$('stage-teacher');
+  el.innerHTML=`<div class="panel card">
+    <div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">🧭 교사용 대시보드</h2>
+      <div class="row" style="margin:0"><button class="btn ghost" id="t-refresh">새로 불러오기</button><button class="btn ghost" id="t-lock">잠그기</button></div></div>
+    ${demoBanner()}
+    <div class="sub-tabs" id="subs">
+      ${[['rank','🏆 순위'],['growth','📈 학습 성장'],['summary','🏫 학급 요약'],['export','⬇️ 내보내기']].map(([k,l])=>`<button data-k="${k}" class="${T.tab===k?'on':''}">${l}</button>`).join('')}
+    </div>
+    <div class="row" id="filters">
+      <div><div class="field-label">학급</div><select id="f-cls"><option value="all">전체 반</option>${CLASSES.map(c=>`<option value="${c.id}" ${String(T.cls)===String(c.id)?'selected':''}>${c.label}</option>`).join('')}</select></div>
+      <div id="f-round-wrap"><div class="field-label">회차</div><select id="f-round"><option value="all">전체 회차</option>${Array.from({length:ROUND_COUNT},(_,i)=>`<option value="${i+1}" ${String(T.round)===String(i+1)?'selected':''}>${esc(VOCAB[i+1].title)}</option>`).join('')}</select></div>
+      <div id="f-sort-wrap" class="${T.tab==='growth'?'':'hidden'}"><div class="field-label">정렬</div><select id="f-sort">
+        ${[['delta','성장폭 큰 순'],['delta-asc','성장폭 작은 순(주의 먼저)'],['tries','도전 횟수 많은 순'],['id','학번 순']].map(([v,l])=>`<option value="${v}" ${T.sort===v?'selected':''}>${l}</option>`).join('')}</select></div>
+    </div>
+    <div id="t-body"></div></div>`;
+  $('subs').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ T.tab=b.dataset.k; renderTeacherMain(); }));
+  $('f-cls').addEventListener('change',e=>{ T.cls=e.target.value; drawTeacherBody(); });
+  $('f-round').addEventListener('change',e=>{ T.round=e.target.value; drawTeacherBody(); });
+  $('f-sort').addEventListener('change',e=>{ T.sort=e.target.value; drawTeacherBody(); });
+  $('t-lock').addEventListener('click',()=>{ T={pw:null,rows:[],tab:'rank',cls:'all',round:'all',sort:'delta'}; renderTeacherTab(); });
+  $('t-refresh').addEventListener('click',async()=>{ const r=await api({action:'teacher',pw:T.pw}); if(r&&r.status==='ok'){ T.rows=r.rows||[]; drawTeacherBody(); toast('최신 기록을 불러왔어요'); } else toast('불러오기에 실패했어요'); });
+  if(!SHEET_WEBHOOK_URL && !T.rows.length){ $('t-body').innerHTML=''; }
+  drawTeacherBody();
+}
+
+function drawTeacherBody(){
+  const body=$('t-body'); const rows=teacherFiltered();
+  $('f-round-wrap').classList.toggle('hidden',T.tab==='summary'||T.tab==='export');
+  $('f-sort-wrap').classList.toggle('hidden',T.tab!=='growth'||T.round==='all');
+  if(!T.rows.length){
+    body.innerHTML=`<p class="muted">아직 저장된 기록이 없어요.</p>${SHEET_WEBHOOK_URL?'':'<div class="row"><button class="btn pink" id="seed-btn">예시 데이터로 대시보드 미리보기</button></div>'}`;
+    if($('seed-btn')) $('seed-btn').addEventListener('click',()=>{ seedDemo(); T.rows=demoRows(); drawTeacherBody(); toast('예시 데이터를 채웠어요'); });
+    return;
+  }
+  if(T.tab==='rank'){
+    const view=T.round, list=rankRows(rows,view);
+    body.innerHTML=rankTable(list,view,true)+`<p class="muted">✽ 회차별 최고 점수 기준 순위예요. 누적 순위는 회차별 최고 점수의 합계입니다.</p>`;
+  } else if(T.tab==='growth'){
+    T.round==='all'?drawGrowthAll(body,rows):drawGrowthRound(body,rows,Number(T.round));
+  } else if(T.tab==='summary'){ drawSummary(body); }
+  else drawExport(body);
+}
+
+function drawGrowthRound(body,rows,round){
+  const g=groupAttempts(rows.filter(r=>Number(r.round)===round));
+  let list=[...g.values()].map(att=>({att,s:statOf(att),r:att[att.length-1]}));
+  if(!list.length){ body.innerHTML=`<p class="muted">이 회차의 기록이 없어요.</p>`; return; }
+  const cmp={delta:(a,b)=>b.s.delta-a.s.delta,'delta-asc':(a,b)=>a.s.delta-b.s.delta,tries:(a,b)=>b.s.n-a.s.n,id:(a,b)=>String(a.r.studentId).localeCompare(String(b.r.studentId),'ko',{numeric:true})};
+  list.sort(cmp[T.sort]||cmp.delta);
+  const multi=list.filter(x=>x.s.n>=2), avg=multi.length?Math.round(multi.reduce((a,x)=>a+x.s.delta,0)/multi.length*10)/10:null;
+  body.innerHTML=`
+    <div class="kpis"><div class="kpi"><span>도전한 학생</span><b>${list.length}명</b></div><div class="kpi"><span>재도전 학생</span><b>${multi.length}명</b></div>
+      <div class="kpi"><span>재도전 평균 향상폭</span><b>${avg==null?'-':(avg>0?'+':'')+avg+'%p'}</b></div>
+      <div class="kpi"><span>관찰 필요</span><b>${list.filter(x=>x.s.attention).length}명</b></div></div>
+    <p class="muted">정답률은 <b>학생이 모든 시도에서 공통으로 푼 단계</b>만으로 계산해요(1단계만 푼 시도와 3단계까지 푼 시도를 공정하게 비교하기 위해서). 향상폭 = 마지막 시도 − 첫 시도이며 ±10%p 이상이면 향상/하락입니다. 행을 누르면 시도별 상세(전체 단계 기준 점수 포함)가 펼쳐지고, 점선은 60% 기준선이에요.</p>
+    <div class="tbl-wrap"><table><thead><tr><th>반</th><th>학번</th><th>이름</th><th>시도</th><th>추이</th><th>첫 → 마지막</th><th>향상폭</th><th>최고</th><th>상태</th></tr></thead><tbody>
+    ${list.map((x,i)=>`<tr class="click" data-i="${i}"><td>${classLabel(x.r.cls)}</td><td>${esc(x.r.studentId)}</td><td><b>${esc(x.r.name)}</b></td><td>${x.s.n}회${x.s.n>=2?`<br><span class="muted">${x.s.k}단계 기준</span>`:''}</td><td>${spark(x.s.ps)}</td>
+      <td>${x.s.n<2?'-':x.s.first+'% → '+x.s.last+'%'}</td><td>${x.s.n<2?'-':`<b style="color:${x.s.delta>=0?'#0E6B45':'#9B1C1F'}">${x.s.delta>0?'+':''}${x.s.delta}%p</b>`}</td><td>${x.s.best}%</td>
+      <td><span class="badge ${x.s.st.cls}">${x.s.st.label}</span>${x.s.attention?' <span class="badge b-att">관찰</span>':''}</td></tr>
+      <tr class="detail hidden" id="d${i}"><td colspan="9">${x.att.map(a=>`<div>#${a.attemptNo} · ${fmtTime(a.ts)} · ${a.phasesCompleted}/${a.phasesTotal}단계 · <b>${a.totalScore}/${a.totalMax} (${pct(a)}%)</b> · 뜻 ${a.p&&a.p[0]!=null?a.p[0]:'-'} · 성조 ${a.p&&a.p[1]!=null?a.p[1]:'-'} · 카드 ${a.p&&a.p[2]!=null?a.p[2]:'-'}</div>`).join('')}</td></tr>`).join('')}
+    </tbody></table></div>`;
+  body.querySelectorAll('tr.click').forEach(tr=>tr.addEventListener('click',()=>$('d'+tr.dataset.i).classList.toggle('hidden')));
+}
+
+function drawGrowthAll(body,rows){
+  const g=groupAttempts(rows); const per=new Map();
+  g.forEach((att,k)=>{ const r=att[att.length-1]; const sk=r.cls+'|'+r.studentId; if(!per.has(sk)) per.set(sk,{cls:r.cls,studentId:r.studentId,name:r.name,rounds:{},deltas:[],tries:0});
+    const p=per.get(sk), s=statOf(att); p.rounds[r.round]={best:s.best,n:s.n}; p.tries+=s.n; if(s.n>=2) p.deltas.push(s.delta); p.name=r.name; });
+  const list=[...per.values()].sort((a,b)=>String(a.studentId).localeCompare(String(b.studentId),'ko',{numeric:true}));
+  body.innerHTML=`<p class="muted">회차별 <b>최고 정답률</b>입니다. 재도전 향상폭은 같은 회차를 2번 이상 푼 경우의 (마지막−첫 시도) 평균이에요. 한 회차의 상세 성장은 위에서 회차를 선택하세요.</p>
+    <div class="tbl-wrap"><table><thead><tr><th>반</th><th>학번</th><th>이름</th>${Array.from({length:ROUND_COUNT},(_,i)=>`<th>${i+1}회차</th>`).join('')}<th>평균 최고</th><th>총 도전</th><th>재도전 향상폭</th></tr></thead><tbody>
+    ${list.map(p=>{ const bs=Object.values(p.rounds).map(x=>x.best), avg=bs.length?Math.round(bs.reduce((a,b)=>a+b,0)/bs.length*10)/10:null;
+      const d=p.deltas.length?Math.round(p.deltas.reduce((a,b)=>a+b,0)/p.deltas.length*10)/10:null;
+      return `<tr><td>${classLabel(p.cls)}</td><td>${esc(p.studentId)}</td><td><b>${esc(p.name)}</b></td>
+        ${Array.from({length:ROUND_COUNT},(_,i)=>{ const x=p.rounds[i+1]; return `<td>${heat(x?x.best:null)}${x&&x.n>1?` <span class="muted">×${x.n}</span>`:''}</td>`; }).join('')}
+        <td>${avg==null?'-':avg+'%'}</td><td>${p.tries}회</td><td>${d==null?'-':`<b style="color:${d>=0?'#0E6B45':'#9B1C1F'}">${d>0?'+':''}${d}%p</b>`}</td></tr>`; }).join('')}
+    </tbody></table></div>`;
+}
+
+function drawSummary(body){
+  const cards=CLASSES.map(c=>{
+    const rows=T.rows.filter(r=>Number(r.cls)===c.id); if(!rows.length) return `<tr><td><b>${c.label}</b></td><td colspan="6" class="muted">기록 없음</td></tr>`;
+    const g=groupAttempts(rows), stats=[...g.values()].map(statOf), students=new Set(rows.map(r=>r.studentId));
+    const multi=stats.filter(s=>s.n>=2), avgBest=Math.round(stats.reduce((a,s)=>a+s.best,0)/stats.length*10)/10;
+    const avgGain=multi.length?Math.round(multi.reduce((a,s)=>a+s.delta,0)/multi.length*10)/10:null;
+    return `<tr><td><b>${c.label}</b></td><td>${students.size}명</td><td>${rows.length}회</td><td>${avgBest}%</td><td>${Math.round(multi.length/stats.length*100)}%</td>
+      <td>${avgGain==null?'-':`<b style="color:${avgGain>=0?'#0E6B45':'#9B1C1F'}">${avgGain>0?'+':''}${avgGain}%p</b>`}</td><td>${stats.filter(s=>s.attention).length}건</td></tr>`;
+  }).join('');
+  const rounds=Array.from({length:ROUND_COUNT},(_,i)=>i+1);
+  const part=CLASSES.map(c=>`<tr><td><b>${c.label}</b></td>${rounds.map(n=>{ const ids=new Set(T.rows.filter(r=>Number(r.cls)===c.id&&Number(r.round)===n).map(r=>r.studentId)); return `<td>${ids.size?ids.size+'명':'<span class="muted">-</span>'}</td>`; }).join('')}</tr>`).join('');
+  body.innerHTML=`<h3 style="font-family:Jua;font-weight:400;margin:6px 0">학급별 학습 현황</h3>
+    <div class="tbl-wrap"><table><thead><tr><th>학급</th><th>참여 학생</th><th>총 시도</th><th>평균 최고 정답률</th><th>재도전 비율</th><th>재도전 평균 향상폭</th><th>관찰 필요</th></tr></thead><tbody>${cards}</tbody></table></div>
+    <h3 style="font-family:Jua;font-weight:400;margin:18px 0 6px">회차별 참여 학생 수</h3>
+    <div class="tbl-wrap"><table><thead><tr><th>학급</th>${rounds.map(n=>`<th>${n}회차</th>`).join('')}</tr></thead><tbody>${part}</tbody></table></div>
+    <p class="muted">✽ 관찰 필요 = 같은 회차에서 첫 시도보다 10%p 이상 떨어졌거나 최고 정답률이 60% 미만인 경우입니다. 학생에게 알리는 용도가 아니라 지도 참고용이에요.</p>`;
+}
+
+function drawExport(body){
+  body.innerHTML=`<p class="muted">모든 시도(첫 도전부터 마지막 도전까지)를 CSV로 내려받아 엑셀·구글시트에서 직접 분석할 수 있어요. 구글시트를 연동했다면 시트 자체가 같은 원본 기록입니다.</p>
+    <div class="row"><button class="btn blue" id="csv-btn">CSV 내려받기 (전체 시도)</button></div>`;
+  $('csv-btn').addEventListener('click',()=>{
+    const head=['기록시각','반','학번','이름','회차','시도차수','완료단계','뜻고르기','성조맞히기','카드뒤집기','총점','만점','정답률(%)'];
+    const lines=[head].concat(T.rows.slice().sort((a,b)=>a.ts-b.ts).map(r=>[new Date(r.ts).toLocaleString('ko-KR'),classLabel(r.cls),r.studentId,r.name,r.round,r.attemptNo,r.phasesCompleted,
+      r.p&&r.p[0]!=null?r.p[0]:'',r.p&&r.p[1]!=null?r.p[1]:'',r.p&&r.p[2]!=null?r.p[2]:'',r.totalScore,r.totalMax,pct(r)]));
+    const csv=lines.map(l=>l.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\r\n');
+    const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'})); a.download='5과_단어퀴즈_전체시도.csv';
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  });
+}
+
+/* 데모 모드 전용: 대시보드 미리보기용 가상 데이터 */
+function seedDemo(){
+  const names=['가온','나래','다온','라온','마루','보라','새봄','아름','여름','하늘','구름','바다'];
+  const rows=[]; let t=Date.now()-7*86400000;
+  names.forEach((nm,i)=>{
+    const cls=CLASSES[i%CLASSES.length].id, sid=String(10100+i*3+(i%CLASSES.length)*100);
+    for(let round=1;round<=2;round++){
+      const tries=1+((i+round)%4); let base=35+((i*13)%35);
+      for(let k=0;k<tries;k++){
+        const trend=(i%5===3)?-6:12; base=Math.max(20,Math.min(100,base+trend+((k*7+i)%5)-2));
+        const phases=1+((i+k)%3), wc=VOCAB[round].words.length;
+        const p=[0,1,2].map(ph=>ph<phases?Math.round(wc*Math.min(100,Math.max(0,base+((ph*5+k)%7)-3))/100):null);
+        const score=p.reduce((a,v)=>a+(v||0),0);
+        t+=3600000*(3+(i+k)%7);
+        rows.push({ts:t,cls,studentId:sid,name:'예시'+nm,round,roundTitle:VOCAB[round].title,attemptNo:k+1,phasesCompleted:phases,phasesTotal:3,
+          p,totalScore:score,totalMax:phases*wc,uid:'seed'+i+round+k});
+      }
+    }
+  });
+  demoSave(rows);
+}
+
+renderQuizStart();
+</script>
+</body>
+</html>
